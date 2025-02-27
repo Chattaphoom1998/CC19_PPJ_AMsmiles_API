@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//admin
+model Admin {
+  id          Int      @id @default(autoincrement())
+  firstNameEn String   @map("first_name_en")
+  lastNameEn  String   @map("last_name_en")
+  firstNameTh String   @map("first_name_th")
+  lastNameTh  String   @map("last_name_th")
+  email       String   @unique
+  password    String   @map("hashed_password")
+  image       String?
+  phone       String   @unique
+  idCard      String?  @map("id_card")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  roleId     Int          @map("role_id")
+  role       Roles        @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  clinicId   Int?         @map("clinic_id")
+  clinic     Clinic?      @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+  doctorInfo DoctorInfo[]
+  schedule   Schedule[]
+
+  @@map("admin")
+}
+
+model Roles {
+  id   Int    @id @default(autoincrement())
+  role String @unique
+
+  admin Admin[]
+
+  @@map("roles")
+}
+
+model DoctorInfo {
+  id                   Int      @id @default(autoincrement())
+  department           String
+  dentalCouncilRegisId String   @map("dental_council_regis _id")
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  adminId              Int      @map("admin_id")
+  admin                Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@map("doctor_info")
+}
+
+//clinic 
+model Clinic {
+  id              Int      @id @default(autoincrement())
+  businessLicense String   @unique @map("business_license")
+  name            String
+  branch          String
+  address         String
+  lat             Float
+  lng             Float
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  admin    Admin[]
+  clinicAd ClinicAd[]
+  room     Room[]
+  user     User[]
+
+  @@map("clinic")
+}
+
+//cllinic ad
+enum AdType {
+  AD
+  NEWS
+  CLINICINFO
+}
+
+model ClinicAd {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String   @map("image_url")
+  imageDes  String?  @map("image_des")
+  link      String?
+  type      AdType
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  clinicId Int    @map("clinic_id")
+  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@map("clinic_ad")
+}
+
+model Room {
+  id          Int     @id @default(autoincrement())
+  roomNumber  Int     @map("room_number")
+  description String?
+
+  clinicId Int        @map("clinic_id")
+  clinic   Clinic     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  schedule Schedule[]
+
+  @@map("room")
+}
+
+//user
+model User {
+  id                 Int      @id @default(autoincrement())
+  firstNameEn        String   @map("first_name_en")
+  lastNameEn         String   @map("last_name_en")
+  firstNameTh        String   @map("first_name_th")
+  lastNameTh         String   @map("last_name_th")
+  email              String   @unique
+  password           String   @map("hashed_password")
+  image              String?
+  phone              String   @unique
+  idCard             String?  @map("id_card")
+  termOfUseAgreement Boolean  @map("term_of_use_agreement")
+  role               String?  @default("USER")
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  clinicId Int?       @map("clinic_id")
+  clinic   Clinic?    @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+  schedule Schedule[]
+
+  @@map("user")
+}
+
+//Schedule
+enum ScheduleStatus {
+  PENDING
+  CONFIRM
+  ARRIVED
+  ABSENT
+  POSTPONE
+  CANCEL
+  PAID
+}
+
+model Schedule {
+  id            Int            @id @default(autoincrement())
+  title         String
+  description   String?
+  appointmentAt DateTime       @map("appointment_at")
+  status        ScheduleStatus @default(PENDING)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  adminId Int       @map("admin_id")
+  admin   Admin     @relation(fields: [adminId], references: [id], onDelete: Restrict)
+  roomId  Int       @map("room_id")
+  room    Room      @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  userId  Int       @map("user_id")
+  user    User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  service Service[]
+
+  @@map("schedule")
+}
+
+enum ServiceStatus {
+  PENDING
+  DONE
+}
+
+model Service {
+  id          Int           @id @default(autoincrement())
+  title       String?
+  description String?
+  status      ServiceStatus @default(PENDING)
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  scheduleId Int      @map("schedule_id")
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@map("service")
+}
