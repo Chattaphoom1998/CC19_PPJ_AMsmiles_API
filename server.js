@@ -8,6 +8,9 @@ require("dotenv").config();
 //import local middlewares
 const errorHandler = require("./middlewares/error");
 const notfoundHandler = require("./middlewares/not-found");
+const authenticate = require("./middlewares/authenticate");
+const doctor = require("./middlewares/doctor");
+const admin = require("./middlewares/admin");
 
 //import routes
 const authRoute = require("./routes/auth-route");
@@ -21,8 +24,14 @@ app.use(morgan("dev")); // Show log of http request in terminal
 app.use(helmet()); //api secure
 
 //Routes
+//public
 app.use("/auth", authRoute);
-
+//user
+app.use("/user", authenticate);
+//doctor
+app.use("/doctor", doctor);
+//admin
+app.use("/admin", admin);
 //hdl err
 app.use(errorHandler);
 app.use(notfoundHandler);
