@@ -14,6 +14,8 @@ const admin = require("./middlewares/admin");
 
 //import routes
 const authRoute = require("./routes/auth-route");
+const scheduleRoute = require("./routes/schedule-route");
+const serviceRoute = require("./routes/service-route");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
@@ -26,12 +28,11 @@ app.use(helmet()); //api secure
 //Routes
 //public
 app.use("/auth", authRoute);
-//user
-app.use("/user", authenticate);
-//doctor
-app.use("/doctor", doctor);
-//admin
-app.use("/admin", admin);
+//private
+app.use("/schedule", authenticate, scheduleRoute);
+app.use("/service", authenticate, serviceRoute);
+//ADMIN
+
 //hdl err
 app.use(errorHandler);
 app.use(notfoundHandler);

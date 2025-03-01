@@ -182,6 +182,34 @@ exports.getMe = async (req, res, next) => {
 				},
 			});
 			userData.role = "USER";
+		} else if (role === "DOCTOR") {
+			userData = await prisma.admin.findUnique({
+				where: { id },
+				select: {
+					id: true,
+					firstNameEn: true,
+					lastNameEn: true,
+					firstNameTh: true,
+					lastNameTh: true,
+					email: true,
+					phone: true,
+					createdAt: true,
+					role: {
+						select: {
+							role: true,
+						},
+					},
+					doctorInfo: {
+						select: {
+							department: true,
+							dentalCouncilRegisId: true,
+						},
+					},
+				},
+			});
+			userData.role = userData.role?.role;
+			userData.department = userData.doctorInfo?.department;
+			userData.dentalCouncilRegisId = userData.doctorInfo?.dentalCouncilRegisId;
 		} else {
 			userData = await prisma.admin.findUnique({
 				where: { id },

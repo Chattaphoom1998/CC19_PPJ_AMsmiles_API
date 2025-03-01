@@ -140,22 +140,17 @@ model User {
 //Schedule
 enum ScheduleStatus {
   PENDING
-  CONFIRM
-  ARRIVED
-  ABSENT
-  POSTPONE
-  CANCEL
-  PAID
+  DONE
 }
 
+// this is treatment
 model Schedule {
-  id            Int            @id @default(autoincrement())
-  title         String
-  description   String?
-  appointmentAt DateTime       @map("appointment_at")
-  status        ScheduleStatus @default(PENDING)
-  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamp(0)
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String?
+  status      ScheduleStatus @default(PENDING)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamp(0)
 
   adminId Int       @map("admin_id")
   admin   Admin     @relation(fields: [adminId], references: [id], onDelete: Restrict)
@@ -170,16 +165,23 @@ model Schedule {
 
 enum ServiceStatus {
   PENDING
-  DONE
+  CONFIRM
+  ARRIVED
+  ABSENT
+  POSTPONE
+  CANCEL
+  PAID
 }
 
 model Service {
-  id          Int           @id @default(autoincrement())
-  title       String?
-  description String?
-  status      ServiceStatus @default(PENDING)
-  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+  id           Int           @id @default(autoincrement())
+  title        String?
+  description  String?
+  status       ServiceStatus @default(PENDING)
+  serviceStart DateTime      @map("service_at")
+  serviceEnd   DateTime      @map("service_end")
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
 
   scheduleId Int      @map("schedule_id")
   schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
