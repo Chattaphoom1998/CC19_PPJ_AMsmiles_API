@@ -54,7 +54,7 @@ exports.register = async (req, res, next) => {
 			where: { phone },
 		});
 		if (existingPhoneUser || existingPhoneAdmin) {
-			throw createError(400, "This phone number is already in use.");
+			return createError(400, "This phone number is already in use.");
 		}
 		if (!termOfUseAgreement) {
 			return createError(
@@ -82,20 +82,6 @@ exports.register = async (req, res, next) => {
 	}
 };
 
-function checkEmailOrPhone(identity) {
-	const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-	const mobileRegex = /^[0-9]{10,15}$/;
-	let identityKey = "";
-	if (emailRegex.test(identity)) {
-		return "email";
-	}
-	if (mobileRegex.test(identity)) {
-		return "phone";
-	}
-
-	return null;
-}
-
 exports.login = async (req, res, next) => {
 	try {
 		const { identity, password } = req.body;
@@ -103,6 +89,19 @@ exports.login = async (req, res, next) => {
 		if (!identity?.trim() || !password?.trim()) {
 			return createError(400, "Please provide both username and password");
 		}
+
+		const checkEmailOrPhone = (identity) => {
+			const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+			const mobileRegex = /^[0-9]{10,15}$/;
+			if (emailRegex.test(identity)) {
+				return "email";
+			}
+			if (mobileRegex.test(identity)) {
+				return "phone";
+			}
+
+			return null;
+		};
 
 		const identityKey = checkEmailOrPhone(identity);
 		if (!identityKey) {

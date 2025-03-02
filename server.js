@@ -16,6 +16,9 @@ const admin = require("./middlewares/admin");
 const authRoute = require("./routes/auth-route");
 const scheduleRoute = require("./routes/schedule-route");
 const serviceRoute = require("./routes/service-route");
+const adminRoute = require("./routes/admin-route");
+const notUser = require("./middlewares/not-user");
+const userRoute = require("./routes/user-route");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
@@ -32,6 +35,8 @@ app.use("/auth", authRoute);
 app.use("/schedule", authenticate, scheduleRoute);
 app.use("/service", authenticate, serviceRoute);
 //ADMIN
+app.use("/admin", authenticate, notUser, adminRoute);
+app.use("/user", authenticate, notUser, userRoute);
 
 //hdl err
 app.use(errorHandler);
