@@ -20,6 +20,7 @@ const adminRoute = require("./routes/admin-route");
 const clinicRoute = require("./routes/clinic-routes");
 const notUser = require("./middlewares/not-user");
 const userRoute = require("./routes/user-route");
+const roomRoute = require("./routes/room-route");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
@@ -31,7 +32,6 @@ app.use(helmet()); //api secure
 
 //Routes
 //clinic
-app.use("/clinic", clinicRoute);
 //public
 app.use("/auth", authRoute);
 //private
@@ -39,6 +39,8 @@ app.use("/schedule", authenticate, scheduleRoute);
 app.use("/service", authenticate, serviceRoute);
 app.use("/user", authenticate, userRoute);
 app.use("/admin", authenticate, notUser, adminRoute);
+app.use("/clinic", authenticate, admin, clinicRoute);
+app.use("/room", authenticate, admin, roomRoute);
 
 //hdl err
 app.use(errorHandler);

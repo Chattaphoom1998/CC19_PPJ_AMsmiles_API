@@ -42,6 +42,10 @@ exports.getAdmin = async (req, res, next) => {
 	try {
 		const { id } = req.params;
 
+		if (!id || isNaN(+id)) {
+			return createError(400, "Invalid admin ID");
+		}
+
 		const admin = await prisma.admin.findUnique({
 			where: { id: +id },
 			select: {
