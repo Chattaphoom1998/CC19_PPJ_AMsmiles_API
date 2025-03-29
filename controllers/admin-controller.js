@@ -21,7 +21,7 @@ exports.getAdminList = async (req, res, next) => {
 				doctorInfo: {
 					select: { department: true, dentalCouncilRegisId: true },
 				},
-				clinic: { select: { name: true } },
+				clinic: { select: { id: true, name: true } },
 				updatedAt: true,
 				role: { select: { role: true } },
 			},
@@ -58,7 +58,7 @@ exports.getAdmin = async (req, res, next) => {
 				doctorInfo: {
 					select: { department: true, dentalCouncilRegisId: true },
 				},
-				clinic: { select: { name: true } },
+				clinic: { select: { id: true, name: true } },
 				updatedAt: true,
 			},
 		});
@@ -297,7 +297,7 @@ exports.updateAdmin = async (req, res, next) => {
 			});
 
 			if (existingDoctorInfo) {
-				await prisma.doctorInfo.update({
+				await prisma.doctorInfo.updateMany({
 					where: { adminId: +id },
 					data: { department, dentalCouncilRegisId },
 				});

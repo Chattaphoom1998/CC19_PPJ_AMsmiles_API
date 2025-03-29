@@ -32,6 +32,7 @@ module.exports = async (req, res, next) => {
 				where: { id: payload.id },
 				include: { role: true },
 			});
+			console.log(foundUser);
 			role = foundUser.role?.role;
 		}
 
