@@ -45,7 +45,7 @@ exports.register = async (req, res, next) => {
 		const existingUser = await prisma.user.findUnique({ where: { email } });
 		const existingAdmin = await prisma.admin.findUnique({ where: { email } });
 		if (existingUser || existingAdmin) {
-			return createError(400, "This email is already in use.");
+			return createError(409, "This email is already in use.");
 		}
 		const existingPhoneUser = await prisma.user.findFirst({
 			where: { phone },
@@ -54,7 +54,7 @@ exports.register = async (req, res, next) => {
 			where: { phone },
 		});
 		if (existingPhoneUser || existingPhoneAdmin) {
-			return createError(400, "This phone number is already in use.");
+			return createError(409, "This phone number is already in use.");
 		}
 		if (!termOfUseAgreement) {
 			return createError(
@@ -82,6 +82,7 @@ exports.register = async (req, res, next) => {
 	}
 };
 
+//ควรแยก login admin
 exports.login = async (req, res, next) => {
 	try {
 		const { identity, password } = req.body;
@@ -178,6 +179,7 @@ exports.getMe = async (req, res, next) => {
 					email: true,
 					phone: true,
 					createdAt: true,
+					image: true,
 				},
 			});
 			userData.role = "USER";
@@ -193,6 +195,7 @@ exports.getMe = async (req, res, next) => {
 					email: true,
 					phone: true,
 					createdAt: true,
+					image: true,
 					role: {
 						select: {
 							role: true,
@@ -221,6 +224,7 @@ exports.getMe = async (req, res, next) => {
 					email: true,
 					phone: true,
 					createdAt: true,
+					image: true,
 					role: {
 						select: {
 							role: true,

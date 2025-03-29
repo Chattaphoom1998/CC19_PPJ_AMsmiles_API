@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//admin
+//admin ลืมเพศ ควมีActiveStatus 
 model Admin {
   id          Int      @id @default(autoincrement())
   firstNameEn String   @map("first_name_en")
@@ -47,6 +47,7 @@ model Roles {
   @@map("roles")
 }
 
+//จริงๆหมอมีได้อันเดียว
 model DoctorInfo {
   id                   Int      @id @default(autoincrement())
   department           String
@@ -113,7 +114,7 @@ model Room {
   @@map("room")
 }
 
-//user
+//user ลืมก็บเพศ
 model User {
   id                 Int      @id @default(autoincrement())
   firstNameEn        String   @map("first_name_en")

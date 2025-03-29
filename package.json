@@ -8,7 +8,7 @@
 		"resetDB": "node prisma/resetDB.js"
 	},
 	"prisma": {
-		"seed": "node prisma/seed.js"
+		"seed": "node prisma/seedAdmin.js"
 	},
 	"keywords": [],
 	"author": "",

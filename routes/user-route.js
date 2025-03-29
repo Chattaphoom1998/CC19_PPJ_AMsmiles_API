@@ -12,8 +12,8 @@ const userRoute = express.Router();
 
 userRoute.get("/list", getUserList);
 userRoute.get("/:id", getUser);
+userRoute.patch("/update/:id", updateUser); //user admin
 userRoute.post("/create", admin, createUser);
-userRoute.patch("/update/:id", admin, updateUser);
 userRoute.delete("/delete/:id", admin, deleteUser);
 
 module.exports = userRoute;

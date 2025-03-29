@@ -200,20 +200,26 @@ exports.updateUser = async (req, res, next) => {
 			idCard,
 			clinicId,
 		} = req.body;
+		const { id: reqId, role: reqRole } = req.user;
 
 		const user = await prisma.user.findUnique({ where: { id: +id } });
 		if (!user) {
 			return createError(404, "User not found.");
 		}
+		if (reqRole !== "ADMIN" && (+reqId !== +id || reqRole === "DOCTOR")) {
+			return next(
+				createError(403, "Forbidden: You can only update your own profile.")
+			);
+		}
 
-		if (email !== user.email) {
+		if (email && email !== user.email) {
 			const existingUser = await prisma.user.findFirst({ where: { email } });
 			if (existingUser) {
 				return createError(400, "This email is already in use.");
 			}
 		}
 
-		if (phone !== user.phone) {
+		if (phone && phone !== user.phone) {
 			const existingPhoneUser = await prisma.user.findUnique({
 				where: { phone },
 			});
@@ -242,7 +248,7 @@ exports.updateUser = async (req, res, next) => {
 				phone: phone || user.phone,
 				image: image || user.image,
 				idCard: idCard || user.idCard,
-				clinicId: clinicId || user.clinicId,
+				...(reqRole === "ADMIN" ? { clinicId: clinicId || user.clinicId } : {}),
 			},
 		});
 

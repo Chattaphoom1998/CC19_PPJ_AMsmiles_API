@@ -17,6 +17,7 @@ const authRoute = require("./routes/auth-route");
 const scheduleRoute = require("./routes/schedule-route");
 const serviceRoute = require("./routes/service-route");
 const adminRoute = require("./routes/admin-route");
+const clinicRoute = require("./routes/clinic-routes");
 const notUser = require("./middlewares/not-user");
 const userRoute = require("./routes/user-route");
 
@@ -29,14 +30,15 @@ app.use(morgan("dev")); // Show log of http request in terminal
 app.use(helmet()); //api secure
 
 //Routes
+//clinic
+app.use("/clinic", clinicRoute);
 //public
 app.use("/auth", authRoute);
 //private
 app.use("/schedule", authenticate, scheduleRoute);
 app.use("/service", authenticate, serviceRoute);
-//ADMIN
+app.use("/user", authenticate, userRoute);
 app.use("/admin", authenticate, notUser, adminRoute);
-app.use("/user", authenticate, notUser, userRoute);
 
 //hdl err
 app.use(errorHandler);
