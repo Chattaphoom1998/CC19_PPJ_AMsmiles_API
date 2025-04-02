@@ -131,7 +131,7 @@ model User {
   createdAt          DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
 
-  clinicId Int?       @map("clinic_id")
+  clinicId Int?       @default(1) @map("clinic_id")
   clinic   Clinic?    @relation(fields: [clinicId], references: [id], onDelete: SetNull)
   schedule Schedule[]
 
@@ -179,8 +179,8 @@ model Service {
   title        String?
   description  String?
   status       ServiceStatus @default(PENDING)
-  serviceStart DateTime      @map("service_at")
-  serviceEnd   DateTime      @map("service_end")
+  serviceStart DateTime?     @map("service_at")
+  serviceEnd   DateTime?     @map("service_end")
   createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
 

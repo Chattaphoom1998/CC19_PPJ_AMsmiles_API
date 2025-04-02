@@ -39,8 +39,8 @@ app.use("/schedule", authenticate, scheduleRoute);
 app.use("/service", authenticate, serviceRoute);
 app.use("/user", authenticate, userRoute);
 app.use("/admin", authenticate, notUser, adminRoute);
-app.use("/clinic", authenticate, admin, clinicRoute);
-app.use("/room", authenticate, admin, roomRoute);
+app.use("/clinic", authenticate, clinicRoute);
+app.use("/room", authenticate, notUser, roomRoute);
 
 //hdl err
 app.use(errorHandler);

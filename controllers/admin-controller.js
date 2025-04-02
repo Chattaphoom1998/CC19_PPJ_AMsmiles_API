@@ -6,7 +6,22 @@ exports.getAdminList = async (req, res, next) => {
 	try {
 		const { id, role } = req.user;
 
+		const { clinicId } = req.query;
+
+		const whereCondition = clinicId
+			? { clinicId: Number(clinicId) }
+			: role === "ADMIN"
+			? {}
+			: {
+					schedule: {
+						some: {
+							adminId: id,
+						},
+					},
+			  };
+
 		const adminList = await prisma.admin.findMany({
+			where: whereCondition,
 			orderBy: { updatedAt: "desc" },
 			select: {
 				id: true,

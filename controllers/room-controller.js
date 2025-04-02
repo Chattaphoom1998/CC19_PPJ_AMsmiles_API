@@ -3,7 +3,11 @@ const createError = require("../utils/createError");
 
 exports.getRoomsByClinic = async (req, res, next) => {
 	try {
-		const { clinicId } = req.query;
+		let clinicId = req.query.clinicId;
+
+		if (!clinicId) {
+			clinicId = req.user?.clinicId;
+		}
 		if (!clinicId) return createError(400, "clinicId is required");
 
 		const rooms = await prisma.room.findMany({

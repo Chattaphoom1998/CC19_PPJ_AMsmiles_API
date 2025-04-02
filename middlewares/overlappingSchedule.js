@@ -51,8 +51,11 @@ const overlappingSchedules = async (req, res, next) => {
 				OR: [{ adminId: doctorId }, { userId: userId }, { roomId: roomId }],
 				service: {
 					some: {
-						serviceStart: { lte: endTime },
-						serviceEnd: { gt: startTime },
+						AND: [
+							{ serviceStart: { lt: endTime } },
+							{ serviceEnd: { gt: startTime } },
+							id ? { id: { not: +id } } : {},
+						],
 					},
 				},
 			},

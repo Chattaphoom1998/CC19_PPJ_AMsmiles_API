@@ -30,7 +30,7 @@ exports.getUserList = async (req, res, next) => {
 				phone: true,
 				idCard: true,
 				image: true,
-				clinic: { select: { name: true } },
+				clinic: { select: { name: true, id: true } },
 				updatedAt: true,
 			},
 		});
@@ -89,8 +89,13 @@ exports.getUser = async (req, res, next) => {
 			return createError(404, "User not found.");
 		}
 
-		if (role !== "ADMIN" && !user.schedule.some((id) => id.adminId === reqId)) {
-			return createError(403, "Forbidden. You cannot view this user.");
+		if (
+			role !== "ADMIN" &&
+			role !== "DOCTOR" &&
+			+reqId !== +id &&
+			!user.schedule.some((id) => id.adminId === reqId)
+		) {
+			return createError(403, "Forbidden. You can not view this user.");
 		}
 
 		const cleanedUser =

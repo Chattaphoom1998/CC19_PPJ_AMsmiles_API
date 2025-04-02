@@ -39,6 +39,13 @@ exports.getScheduleList = async (req, res, next) => {
 						},
 					},
 				},
+				room: {
+					select: {
+						id: true,
+						roomNumber: true,
+						description: true,
+					},
+				},
 				user: {
 					select: {
 						id: true,
@@ -94,6 +101,13 @@ exports.getSchedule = async (req, res, next) => {
 						doctorInfo: {
 							select: { department: true, dentalCouncilRegisId: true },
 						},
+					},
+				},
+				room: {
+					select: {
+						id: true,
+						roomNumber: true,
+						description: true,
 					},
 				},
 				user: {
@@ -260,5 +274,58 @@ exports.updateSchedule = async (req, res, next) => {
 		});
 	} catch (error) {
 		next(error);
+	}
+};
+
+exports.createScheduleWithService = async (req, res, next) => {
+	try {
+		const {
+			title,
+			description,
+			adminId,
+			userId,
+			roomId,
+			serviceTitle,
+			serviceDescription,
+			serviceStart,
+			serviceEnd,
+		} = req.body;
+
+		if (
+			!title ||
+			!adminId ||
+			!userId ||
+			!roomId ||
+			!serviceStart ||
+			!serviceEnd
+		) {
+			return createError(400, "Missing required fields");
+		}
+
+		const schedule = await prisma.schedule.create({
+			data: {
+				title,
+				description,
+				adminId: +adminId,
+				userId: +userId,
+				roomId: +roomId,
+			},
+		});
+
+		await prisma.service.create({
+			data: {
+				title: serviceTitle,
+				description: serviceDescription,
+				scheduleId: schedule.id,
+				serviceStart: new Date(serviceStart),
+				serviceEnd: new Date(serviceEnd),
+			},
+		});
+
+		res
+			.status(201)
+			.json({ message: "Schedule and service created successfully." });
+	} catch (err) {
+		next(err);
 	}
 };
